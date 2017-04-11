@@ -1,0 +1,35 @@
+#! /bin/bash
+
+function install() {
+    sudo apt-get install -y $1 >/dev/null 2>&1 
+}
+
+programs="git default-jdk maven" 
+
+echo "Installing web-server essentials... This can take some time.."
+
+sudo apt-get update >/dev/null 2>&1 
+
+echo "Starting to install extra programs"
+
+for program in $programs
+do 
+    echo "Current package: $program" 
+    install $program 
+done 
+
+echo "Setting up the server"
+
+cd /vagrant/adl-designer
+cp -r apphome apphome-work
+mvn clean install
+cd adl-designer/designer
+mvn tomcat7:run
+
+#echo "Symlinking /var/www folder to /vagrant folder..."
+
+#rm -rf /var/www
+#mkdir /var/www
+#ln -fs /vagrant /var/www/html
+
+echo "All done! Access webserver from localhost:8080/designer or go 'vagrant ssh' to access the server." 
